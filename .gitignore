@@ -1,0 +1,72 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Logs
+logs/
+log/
+*.log
+docker-*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Docker / SQLite local dev
+web/data/
+*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+*.pem
+.cache/
+
+# Volcados locales / agentes (no código)
+last_build.txt
+test_echo.txt
+copied_docker_verify.txt
+docker_build_exit.txt
+docker_build_out.txt
+docker_up_exit.txt
+docker_up_out.txt
+
+# Documentación / entregas locales (no forma parte del código de la app)
+/documentacion/
+/documentacion-tecnica/
+
+# Multica / runtime de agente (no forma parte del OSS público)
+AGENTS.md
+.agent_context/
+.cursor/
+
+# Documentación de gestión interna (no publicar)
+docs/OSS_READINESS.md
+docs/TEST_COVERAGE_ROADMAP.md
+CONTRIBUTING.md

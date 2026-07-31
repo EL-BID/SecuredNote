@@ -1,0 +1,39 @@
+name: secured-note
+
+# Variables: solo `.env` en la raíz (compose las carga y las pasa al build/arranque).
+# Documentación: `.env.example` y README.
+
+services:
+  app:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE:-}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-${WEB_ORIGIN}}
+        CSP_REPORT_BASE: ${CSP_REPORT_BASE:-}
+        NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID:-}
+        NEXT_PUBLIC_GITHUB_REPO_URL: ${NEXT_PUBLIC_GITHUB_REPO_URL:-}
+        NEXT_PUBLIC_BRAND_PRIMARY: ${NEXT_PUBLIC_BRAND_PRIMARY:-}
+        NEXT_PUBLIC_BRAND_ACCENT: ${NEXT_PUBLIC_BRAND_ACCENT:-}
+        NEXT_PUBLIC_BRAND_BACKGROUND: ${NEXT_PUBLIC_BRAND_BACKGROUND:-}
+        NEXT_PUBLIC_BRAND_APP_NAME: ${NEXT_PUBLIC_BRAND_APP_NAME:-}
+        HSTS_MAX_AGE_SECONDS: ${HSTS_MAX_AGE_SECONDS:-31536000}
+        HSTS_PRELOAD: ${HSTS_PRELOAD:-false}
+        WEB_ORIGIN: ${WEB_ORIGIN:-http://localhost:3001}
+    image: ${COMPOSE_IMAGE_NAME:-secured-note:local}
+    container_name: ${COMPOSE_CONTAINER_NAME:-secured-note-app}
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: ${APP_PORT:-3001}
+      PUBLIC_GITHUB_REPO_URL: ${NEXT_PUBLIC_GITHUB_REPO_URL:-}
+      SQLITE_PATH: ${SQLITE_PATH:-/data/secured-note.db}
+    ports:
+      - "${HOST_BIND:-}${HOST_BIND:+:}${HOST_PORT:-3001}:${APP_PORT:-3001}"
+    volumes:
+      - app-data:/data
+    restart: unless-stopped
+
+volumes:
+  app-data: {}

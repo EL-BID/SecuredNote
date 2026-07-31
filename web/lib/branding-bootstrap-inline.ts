@@ -1,0 +1,18 @@
+import {
+  DEFAULT_PROJECT_BRANDING,
+  PROJECT_BRANDING_KEY,
+  PROJECT_SETUP_DONE_KEY,
+} from "@/lib/project-branding"
+
+const D = {
+  primary: DEFAULT_PROJECT_BRANDING.primary,
+  accent: DEFAULT_PROJECT_BRANDING.accent,
+  background: DEFAULT_PROJECT_BRANDING.background,
+}
+
+export function getBrandingBootstrapInlineScript(): string {
+  const key = JSON.stringify(PROJECT_BRANDING_KEY)
+  const doneKey = JSON.stringify(PROJECT_SETUP_DONE_KEY)
+  const def = JSON.stringify(D)
+  return `;(function(){var KEY=${key},DONE=${doneKey},DEFAULT=${def};function normHex(v){if(typeof v!=="string")return null;var s=v.trim();if(s[0]!=="#")s="#"+s;if(/^#[0-9a-fA-F]{6}$/.test(s))return s.toLowerCase();return null}function parse(raw){if(!raw)return DEFAULT;try{var o=JSON.parse(raw);if(!o||typeof o!=="object")return DEFAULT;return{primary:normHex(o.primary)||DEFAULT.primary,accent:normHex(o.accent)||DEFAULT.accent,background:normHex(o.background)||DEFAULT.background}}catch(e){return DEFAULT}}function hexToRgb(hex){var s=hex.replace(/^#/,"");if(!/^[0-9a-f]{6}$/i.test(s))return null;var n=parseInt(s,16);return{r:(n>>16)&255,g:(n>>8)&255,b:n&255}}function rgbToHex(r,g,b){var c=function(n){return Math.max(0,Math.min(255,Math.round(n)))};return"#"+[c(r),c(g),c(b)].map(function(x){return x.toString(16).padStart(2,"0")}).join("")}function mix(a,b,t){var A=hexToRgb(a),B=hexToRgb(b);if(!A||!B)return a;return rgbToHex(A.r+(B.r-A.r)*t,A.g+(B.g-A.g)*t,A.b+(B.b-A.b)*t)}function lum(hex){var o=hexToRgb(hex);if(!o)return 0;function lin(c){var x=c/255;return x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4)}var r=lin(o.r),g=lin(o.g),bl=lin(o.b);return 0.2126*r+0.7152*g+0.0722*bl}function apply(b){var primary=b.primary,accent=b.accent,background=b.background,L=lum(background),isDarkBg=L<0.35,fg=isDarkBg?"#f0f9ff":"#0a0a0a",fgMuted=isDarkBg?mix(fg,accent,0.35):mix(fg,primary,0.45),card=mix(background,isDarkBg?"#ffffff":"#000000",isDarkBg?0.14:0.08),muted=mix(background,primary,0.45),input=mix(background,primary,0.38),popover=card,r=document.documentElement;r.style.setProperty("--background",background);r.style.setProperty("--foreground",fg);r.style.setProperty("--card",card);r.style.setProperty("--card-foreground",fg);r.style.setProperty("--popover",popover);r.style.setProperty("--popover-foreground",fg);r.style.setProperty("--primary",primary);r.style.setProperty("--primary-foreground","#ffffff");r.style.setProperty("--secondary",accent);r.style.setProperty("--secondary-foreground","#ffffff");r.style.setProperty("--muted",muted);r.style.setProperty("--muted-foreground",fgMuted);r.style.setProperty("--accent",accent);r.style.setProperty("--accent-foreground","#ffffff");r.style.setProperty("--destructive","#da3232");r.style.setProperty("--destructive-foreground","#ffffff");r.style.setProperty("--border",primary);r.style.setProperty("--input",input);r.style.setProperty("--ring",accent);r.style.setProperty("--chart-1",accent);r.style.setProperty("--chart-2",primary);r.style.setProperty("--chart-3","#308144");r.style.setProperty("--chart-4","#ffda00");r.style.setProperty("--chart-5","#8dba38");r.style.setProperty("--sidebar",card);r.style.setProperty("--sidebar-foreground",fg);r.style.setProperty("--sidebar-primary",primary);r.style.setProperty("--sidebar-primary-foreground","#ffffff");r.style.setProperty("--sidebar-accent",muted);r.style.setProperty("--sidebar-accent-foreground",fg);r.style.setProperty("--sidebar-border",primary);r.style.setProperty("--sidebar-ring",accent)}try{if(localStorage.getItem(DONE)!=="1")return;var raw=localStorage.getItem(KEY);if(!raw)return;var b=parse(raw);apply(b)}catch(e){void e}})();`
+}

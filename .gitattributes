@@ -1,0 +1,2 @@
+# Normalize line endings for cross-platform clones (Linux/macOS/Windows + Azure DevOps).
+* text=auto eol=lf

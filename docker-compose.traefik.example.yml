@@ -1,0 +1,29 @@
+# Overlay opcional para publicar detrás de Traefik (HTTPS + Let's Encrypt).
+# Uso:
+#   cp .env.example .env
+#   cp .env.traefik.example .env.traefik   # opcional: fusionar vars en .env
+#   docker compose -f docker-compose.yml -f docker-compose.traefik.example.yml up -d --build
+#
+# Requisitos en el host:
+#   - Red Docker externa `traefik-public`
+#   - Traefik con provider Docker y certresolver (p. ej. letsencrypt)
+#   - DNS del dominio apuntando al host
+
+services:
+  app:
+    # HOST_BIND=127.0.0.1 en `.env` (ver `.env.traefik.example`); el puerto se define en docker-compose.yml.
+    networks:
+      - default
+      - traefik-public
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.http.routers.secured-note.rule=Host(`${PUBLIC_HOST}`)
+      - traefik.http.routers.secured-note.entrypoints=websecure
+      - traefik.http.routers.secured-note.tls=true
+      - traefik.http.routers.secured-note.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}
+      - traefik.http.services.secured-note.loadbalancer.server.port=${APP_PORT:-3001}
+
+networks:
+  traefik-public:
+    external: true

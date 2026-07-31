@@ -1,0 +1,61 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+- job: QualityGate
+  steps:
+    - checkout: self
+      fetchDepth: 0
+
+    - task: NodeTool@0
+      inputs:
+        versionSpec: "20.x"
+      displayName: "Install Node.js"
+
+    - script: |
+        cd web
+        npm install
+        npm rebuild bcrypt better-sqlite3
+        npm run test:coverage
+        test -f lcov.info || (echo "ERROR: web/lcov.info missing after test:coverage" && exit 1)
+        test -f ../lcov.info || (echo "ERROR: repo-root lcov.info missing after test:coverage" && exit 1)
+        echo "Sonar LCOV: $(wc -l < lcov.info) lines at $(pwd)/lcov.info"
+        echo "Sonar root LCOV: $(wc -l < ../lcov.info) lines at $(cd .. && pwd)/lcov.info"
+      displayName: "Test (coverage)"
+
+    - script: |
+        cd web
+        echo "Debug normalized LCOV paths"
+        head -40 lcov.info
+        grep "^SF:" lcov.info | head -20
+        echo "Debug root LCOV paths"
+        head -40 ../lcov.info
+        grep "^SF:" ../lcov.info | head -20
+      displayName: "Debug LCOV paths"
+
+    - script: |
+        cd web
+        npm run build
+      displayName: "Build"
+
+    - task: SonarQubePrepare@8
+      inputs:
+        SonarQube: "SecuredNote - Analize"
+        scannerMode: "cli"
+        configMode: "file"
+        configFile: "sonar-project.properties"
+        extraProperties: |
+          sonar.javascript.lcov.reportPaths=$(Build.SourcesDirectory)/lcov.info
+          sonar.typescript.lcov.reportPaths=$(Build.SourcesDirectory)/lcov.info
+          sonar.verbose=true
+
+    - task: SonarQubeAnalyze@8
+      inputs:
+        jdkversion: "JAVA_HOME_21_X64"
+
+    - task: SonarQubePublish@8
+      inputs:
+        pollingTimeoutSec: "300"
